@@ -1,0 +1,7 @@
+db.sqlite3
+venv
+.idea
+media/avatars/*
+!media/avatars/default_avatar.png
+users/migrations/*
+!users/migrations/__init__.py
