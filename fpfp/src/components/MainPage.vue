@@ -2,8 +2,8 @@
     <div class="main-page">
       <aside class="sidebar">
         <div class="profile" @click="logout">
-          <img class="avatar" src="https://via.placeholder.com/60" alt="Avatar" />
-          <p class="username">Ваш ник</p>
+          <img class="avatar" :src="userAvatar" alt="Avatar" />
+          <p class="username">{{ username }}</p>
         </div>
         <ul class="menu">
           <li>Главная</li>
@@ -14,19 +14,44 @@
       <div class="content">
       </div>
     </div>
-</template>
-
-<script>
-export default {
-  name: 'MainPage',
-  methods: {
-    logout() {
-      localStorage.removeItem('authToken');
-      this.$router.push('/');
+  </template>
+  
+  <script>
+  import axios from 'axios';
+  
+  export default {
+    name: 'MainPage',
+    data() {
+      return {
+        username: '',
+        userAvatar: 'https://via.placeholder.com/60', 
+      };
     },
-  },
-};
-</script>
+    async created() {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        this.$router.push('/'); 
+        return;
+      }
+      try {
+        const response = await axios.get('http://localhost:8000/api/users/me/', {
+          headers: { Authorization: `Token ${token}` },
+        });
+        this.username = response.data.username;
+        this.userAvatar = `http://localhost:8000/${response.data.avatar}`; 
+      } catch (error) {
+        console.error('Ошибка загрузки данных пользователя:', error);
+        this.$router.push('/');
+      }
+    },
+    methods: {
+      logout() {
+        localStorage.removeItem('authToken');
+        this.$router.push('/');
+      },
+    },
+  };
+  </script>  
 
 <style scoped>
 .main-page {

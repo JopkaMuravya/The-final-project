@@ -59,23 +59,36 @@ export default {
       }
 
       try {
-        const response = await axios.post('http://localhost:8000/api/users/', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+        const registrationResponse = await axios.post(
+          'http://localhost:8000/api/users/',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+        console.log('Регистрация успешна:', registrationResponse.data);
+
+        const loginResponse = await axios.post('http://localhost:8000/api/login/', {
+          username: this.username,
+          password: this.password,
         });
-        this.successMessage = 'Регистрация успешна!';
+
+        const { token } = loginResponse.data;
+        localStorage.setItem('authToken', token);
+
+        this.successMessage = 'Регистрация и вход успешны!';
         this.errorMessage = '';
-        console.log('Регистрация успешна:', response.data);
-        this.router.push('/main');
+        this.router.push('/main'); 
       } catch (error) {
-        this.errorMessage = 'Ошибка регистрации: ' + (error.response?.data?.detail || 'Неизвестная ошибка');
+        this.errorMessage = 'Ошибка регистрации или входа: ' + (error.response?.data?.detail || 'Неизвестная ошибка');
         this.successMessage = '';
-        console.error('Ошибка регистрации:', error.response?.data);
+        console.error('Ошибка регистрации или входа:', error.response?.data);
       }
     },
     goToLogin() {
-      this.router.push('/login'); 
+      this.router.push('/login');
     },
   },
 };
