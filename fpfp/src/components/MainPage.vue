@@ -1,7 +1,7 @@
 <template>
     <div class="main-page">
       <aside class="sidebar">
-        <div class="profile">
+        <div class="profile" @click="logout">
           <img class="avatar" src="https://via.placeholder.com/60" alt="Avatar" />
           <p class="username">Ваш ник</p>
         </div>
@@ -12,7 +12,6 @@
         </ul>
       </aside>
       <div class="content">
-        <!-- Здесь будет содержимое главной страницы -->
       </div>
     </div>
 </template>
@@ -20,6 +19,12 @@
 <script>
 export default {
   name: 'MainPage',
+  methods: {
+    logout() {
+      localStorage.removeItem('authToken');
+      this.$router.push('/');
+    },
+  },
 };
 </script>
 
@@ -53,6 +58,12 @@ export default {
   width: 100%; 
   height: 110px; 
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.profile:hover {
+  background: rgba(255, 255, 255, 0.9); 
 }
 
 .avatar {
@@ -86,14 +97,13 @@ export default {
   border-radius: 5px;
   text-align: center;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  transition: background 0.3s ease;
   font-weight: bold;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .menu li:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.9); 
 }
 
 .content {

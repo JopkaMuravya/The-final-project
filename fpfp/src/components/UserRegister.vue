@@ -20,6 +20,7 @@
       </div>
       <button type="submit">Зарегистрироваться</button>
     </form>
+    <button @click="goToLogin">Войти</button>
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-if="successMessage" class="success">{{ successMessage }}</div>
   </div>
@@ -27,7 +28,7 @@
 
 <script>
 import axios from 'axios';
-import { useRouter } from 'vue-router'; 
+import { useRouter } from 'vue-router';
 
 export default {
   data() {
@@ -41,7 +42,7 @@ export default {
     };
   },
   setup() {
-    const router = useRouter(); 
+    const router = useRouter();
     return { router };
   },
   methods: {
@@ -72,6 +73,9 @@ export default {
         this.successMessage = '';
         console.error('Ошибка регистрации:', error.response?.data);
       }
+    },
+    goToLogin() {
+      this.router.push('/login'); 
     },
   },
 };
