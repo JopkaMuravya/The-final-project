@@ -7,8 +7,10 @@
         </div>
         <ul class="menu">
           <li>Главная</li>
-          <li>Задания</li>
           <li>Профиль</li>
+          <li>Мои задания</li>
+          <li>Рейтинг</li>
+          <li>Поддержка</li>
         </ul>
       </aside>
       <div class="content">
@@ -168,12 +170,12 @@
     background: #0d1b2a;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-top: -10px; 
+    margin-top: -10px;
   }
   
   .search-input {
     flex: 1;
-    height: 40px; 
+    height: 40px;
     margin: 0 10px;
     padding: 10px;
     border: none;
@@ -185,7 +187,7 @@
   
   .filter-button,
   .add-button {
-    height: 40px; 
+    height: 40px;
     background: #ffffff;
     border: none;
     border-radius: 5px;
