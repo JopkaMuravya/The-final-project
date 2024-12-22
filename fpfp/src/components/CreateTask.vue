@@ -5,7 +5,7 @@
         <h1 class="title">Создать задание</h1>
         <form class="task-form" @submit.prevent="createTask">
           <div class="form-group">
-            <label for="title">Заголовок</label>
+            <label for="title" class="form-label">Заголовок</label>
             <input
               type="text"
               id="title"
@@ -17,7 +17,18 @@
           </div>
   
           <div class="form-group">
-            <label for="description">Описание</label>
+            <label for="description" class="form-label">Описание</label>
+            <div class="icon-buttons">
+              <button type="button" class="icon-button">
+                <img :src="BoldIcon" alt="Bold" />
+              </button>
+              <button type="button" class="icon-button">
+                <img :src="ItalicIcon" alt="Italic" />
+              </button>
+              <button type="button" class="icon-button">
+                <img :src="UnderlineIcon" alt="Underline" />
+              </button>
+            </div>
             <textarea
               id="description"
               class="form-control"
@@ -29,7 +40,7 @@
   
           <div class="form-row">
             <div class="form-group wider-width">
-              <label for="category">Категория</label>
+              <label for="category" class="form-label">Категория</label>
               <select
                 id="category"
                 class="form-control same-height"
@@ -45,7 +56,7 @@
             </div>
   
             <div class="form-group compact-width">
-              <label for="reward">Вознаграждение</label>
+              <label for="reward" class="form-label">Вознаграждение</label>
               <div class="reward-wrapper">
                 <input
                   type="number"
@@ -61,13 +72,24 @@
           </div>
   
           <div class="form-group">
-            <label for="tags">Теги</label>
+            <label for="tags" class="form-label">Теги</label>
             <input
               type="text"
               id="tags"
               class="form-control"
               v-model="tags"
               placeholder="Введите теги через запятую"
+            />
+          </div>
+  
+          <div class="form-group">
+            <label for="files" class="form-label">Прикрепить файлы</label>
+            <input
+              type="file"
+              id="files"
+              class="form-control"
+              multiple
+              @change="handleFileUpload"
             />
           </div>
   
@@ -89,6 +111,9 @@
   import axios from 'axios';
   import SidebarMenu from './SidebarMenu.vue';
   import CoinIcon from '../assets/icons/coin.png';
+  import BoldIcon from '../assets/icons/bold.png';
+  import ItalicIcon from '../assets/icons/italic.png';
+  import UnderlineIcon from '../assets/icons/underlined.png';
   
   export default defineComponent({
     name: 'CreateTask',
@@ -98,34 +123,43 @@
     data() {
       return {
         CoinIcon,
+        BoldIcon,
+        ItalicIcon,
+        UnderlineIcon,
         title: '',
         description: '',
         category: '',
         reward: 0,
         tags: '',
+        files: [] as File[],
       };
     },
     methods: {
+      handleFileUpload(event: Event) {
+        const target = event.target as HTMLInputElement;
+        if (target.files) {
+          this.files = Array.from(target.files);
+        }
+      },
       async createTask() {
         try {
           const token = localStorage.getItem('authToken');
           if (!token) throw new Error('Вы не авторизованы.');
   
-          const response = await axios.post(
-            'http://localhost:8000/api/tasks/',
-            {
-              title: this.title,
-              description: this.description,
-              category: this.category,
-              reward: this.reward,
-              tags: this.tags,
+          const formData = new FormData();
+          formData.append('title', this.title);
+          formData.append('description', this.description);
+          formData.append('category', this.category);
+          formData.append('reward', this.reward.toString());
+          formData.append('tags', this.tags);
+          this.files.forEach((file) => formData.append('files', file));
+  
+          const response = await axios.post('http://localhost:8000/api/tasks/', formData, {
+            headers: {
+              Authorization: `Token ${token}`,
+              'Content-Type': 'multipart/form-data',
             },
-            {
-              headers: {
-                Authorization: `Token ${token}`,
-              },
-            }
-          );
+          });
           alert('Задание успешно создано!');
           console.log(response.data);
         } catch (error) {
@@ -165,12 +199,47 @@
   .task-form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 25px; 
   }
   
   .form-group {
+    margin-top: -10px;
     display: flex;
     flex-direction: column;
+    gap: 3px; /
+  }
+  
+  .form-label {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .icon-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .icon-button {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+  }
+  
+  .icon-button:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .icon-button img {
+    width: 20px;
+    height: 20px;
   }
   
   .form-control {
@@ -186,8 +255,16 @@
   
   .form-row {
     display: flex;
-    gap: 20px;
+    gap: 25px; 
     justify-content: flex-start;
+  }
+  
+  .wider-width {
+    flex: 0 0 350px;
+  }
+  
+  .compact-width {
+    flex: 0 0 150px;
   }
   
   .reward-wrapper {
