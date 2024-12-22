@@ -206,7 +206,7 @@
     margin-top: -10px;
     display: flex;
     flex-direction: column;
-    gap: 3px; /
+    gap: 3px;
   }
   
   .form-label {
