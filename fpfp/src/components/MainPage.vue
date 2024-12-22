@@ -76,7 +76,7 @@
         this.userAvatar = `http://localhost:8000${response.data.avatar}`;
         this.userLevel = response.data.level || 1;
         this.userRank = response.data.rank || 'Новичок';
-        this.userCoins = response.data.coins || 0;
+        this.userCoins = response.data.balance || 0;
       } catch (error) {
         console.error('Ошибка загрузки данных пользователя:', error);
         this.$router.push('/');

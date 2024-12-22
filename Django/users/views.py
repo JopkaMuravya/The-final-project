@@ -40,4 +40,7 @@ class CurrentUserView(APIView):
             "username": user.username,
             "email": user.email,
             "avatar": user.avatar.url if user.avatar else None,
+            "level": user.level,
+            "rank": user.rank,
+            "balance": user.balance,
         })
