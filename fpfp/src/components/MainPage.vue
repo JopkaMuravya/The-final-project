@@ -16,6 +16,14 @@
             <img :src="AddIcon" alt="Создать задачу" />
           </button>
         </div>
+  
+        <div class="task-header">
+          <span class="task-column">Тема</span>
+          <span class="task-column">Категория</span>
+          <span class="task-column">Автор</span>
+          <span class="task-column">Ответы</span>
+        </div>
+  
         <TaskList :searchQuery="searchQuery" /> 
       </div>
     </div>
@@ -24,7 +32,7 @@
   <script lang="ts">
   import { defineComponent } from 'vue';
   import SidebarMenu from './SidebarMenu.vue';
-  import TaskList from './TaskList.vue'; 
+  import TaskList from './TaskList.vue';
   import FilterIcon from '../assets/icons/filter.png';
   import AddIcon from '../assets/icons/add.png';
   
@@ -32,7 +40,7 @@
     name: 'MainPage',
     components: {
       SidebarMenu,
-      TaskList, 
+      TaskList,
     },
     data() {
       return {
@@ -43,7 +51,7 @@
     },
     methods: {
       createTask() {
-        this.$router.push('/create-task'); 
+        this.$router.push('/create-task');
       },
     },
   });
@@ -60,6 +68,22 @@
   .content {
     flex: 1;
     padding: 20px;
+  }
+  
+  .task-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    color: white;
+    font-weight: bold;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3); 
+  }
+  
+  .task-column {
+    flex: 1;
+    text-align: left;
+    font-size: 16px; 
   }
   
   .top-menu {
