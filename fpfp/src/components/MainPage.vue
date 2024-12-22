@@ -16,6 +16,7 @@
             <img :src="AddIcon" alt="Создать задачу" />
           </button>
         </div>
+        <TaskList :searchQuery="searchQuery" /> 
       </div>
     </div>
   </template>
@@ -23,6 +24,7 @@
   <script lang="ts">
   import { defineComponent } from 'vue';
   import SidebarMenu from './SidebarMenu.vue';
+  import TaskList from './TaskList.vue'; 
   import FilterIcon from '../assets/icons/filter.png';
   import AddIcon from '../assets/icons/add.png';
   
@@ -30,6 +32,7 @@
     name: 'MainPage',
     components: {
       SidebarMenu,
+      TaskList, 
     },
     data() {
       return {
@@ -40,7 +43,7 @@
     },
     methods: {
       createTask() {
-        this.$router.push('/create-task');
+        this.$router.push('/create-task'); 
       },
     },
   });
@@ -53,10 +56,12 @@
     background: #1b263b;
     font-family: 'Arial', sans-serif;
   }
+  
   .content {
     flex: 1;
     padding: 20px;
   }
+  
   .top-menu {
     display: flex;
     justify-content: space-between;
@@ -67,6 +72,7 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-top: -10px;
   }
+  
   .search-input {
     flex: 1;
     height: 40px;
@@ -78,6 +84,7 @@
     color: #1b263b;
     font-weight: bold;
   }
+  
   .filter-button,
   .add-button {
     height: 40px;
@@ -89,10 +96,12 @@
     transition: background 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
+  
   .filter-button:hover,
   .add-button:hover {
     background: rgba(255, 255, 255, 0.9);
   }
+  
   .filter-button img,
   .add-button img {
     width: 24px;

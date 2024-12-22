@@ -6,6 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer, TaskSerializer
 from .models import Task
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -53,4 +55,16 @@ class TaskViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        task = serializer.save(user=self.request.user)
+        self.notify_task_created(task)
+
+    def notify_task_created(self, task):
+        channel_layer = get_channel_layer()
+        task_data = TaskSerializer(task).data
+        async_to_sync(channel_layer.group_send)(
+            "tasks",
+            {
+                "type": "task_message",
+                "message": task_data,
+            },
+        )
