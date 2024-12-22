@@ -8,12 +8,26 @@
             <label for="title">Заголовок</label>
             <input type="text" id="title" class="form-control" placeholder="Введите заголовок" />
           </div>
-  
+
           <div class="form-group">
             <label for="description">Описание</label>
+            <div class="icon-buttons">
+              <button type="button" class="icon-button">
+                <img :src="BoldIcon" alt="Bold" />
+              </button>
+              <button type="button" class="icon-button">
+                <img :src="ItalicIcon" alt="Italic" />
+              </button>
+              <button type="button" class="icon-button">
+                <img :src="UnderlineIcon" alt="Underline" />
+              </button>
+              <button type="button" class="icon-button">
+                <img :src="SmileyIcon" alt="Smiley" />
+              </button>
+            </div>
             <textarea id="description" class="form-control" placeholder="Опишите задание"></textarea>
           </div>
-  
+
           <div class="form-row">
             <div class="form-group wider-width">
               <label for="category">Категория</label>
@@ -25,7 +39,7 @@
                 <option value="other">Другое</option>
               </select>
             </div>
-  
+
             <div class="form-group compact-width">
               <label for="reward">Вознаграждение</label>
               <div class="reward-wrapper">
@@ -39,17 +53,17 @@
               </div>
             </div>
           </div>
-  
+
           <div class="form-group">
             <label for="tags">Теги</label>
             <input type="text" id="tags" class="form-control" placeholder="Введите теги через запятую" />
           </div>
-  
+
           <div class="form-group">
             <label for="files">Прикрепить файлы</label>
             <input type="file" id="files" class="form-control" multiple />
           </div>
-  
+
           <div class="form-buttons">
             <button type="button" class="btn btn-secondary">Назад</button>
             <button type="button" class="btn btn-primary">Создать</button>
@@ -57,145 +71,181 @@
         </form>
       </div>
     </div>
-  </template>
-  
-  <script lang="ts">
-  import { defineComponent } from 'vue';
-  import SidebarMenu from './SidebarMenu.vue';
-  import CoinIcon from '../assets/icons/coin.png'; 
-  
-  export default defineComponent({
-    name: 'CreateTask',
-    components: {
-      SidebarMenu,
-    },
-    data() {
-      return {
-        CoinIcon, 
-      };
-    },
-  });
-  </script>
-  
-  <style scoped>
-  .main-page {
-    display: flex;
-    height: 100vh;
-    background: #1b263b;
-    font-family: 'Arial', sans-serif;
-    overflow-y: auto; 
-  }
-  
-  .content {
-    flex: 1;
-    padding: 20px;
-    color: white;
-  }
-  
-  .title {
-    font-size: 40px;
-    margin-top: -10px;
-    text-align: left;
-    font-weight: bold;
-  }
-  
-  .task-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .form-group {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .form-group label {
-    margin-bottom: 8px;
-    font-size: 16px;
-    font-weight: bold;
-  }
-  
-  .form-control {
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  
-  textarea.form-control {
-    resize: vertical;
-  }
-  
-  .form-row {
-    display: flex;
-    gap: 20px;
-    justify-content: flex-start; 
-  }
-  
-  .wider-width {
-    flex: 0 0 350px; 
-  }
-  
-  .compact-width {
-    flex: 0 0 150px; 
-  }
-  
-  .reward-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 15px; 
-  }
-  
-  .reward-input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-    text-align: left; 
-  }
-  
-  .same-height {
-    height: 42px; 
-  }
-  
-  .coin-icon {
-    width: 24px;
-    height: 24px;
-  }
-  
-  .form-buttons {
-    display: flex;
-    justify-content: flex-end; 
-    gap: 10px; 
-  }
-  
-  .btn {
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  
-  .btn-primary {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  .btn-primary:hover {
-    background-color: #0056b3;
-  }
-  
-  .btn-secondary {
-    background-color: #6c757d;
-    color: white;
-  }
-  
-  .btn-secondary:hover {
-    background-color: #5a6268;
-  }
-  </style>  
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import SidebarMenu from './SidebarMenu.vue';
+import CoinIcon from '../assets/icons/coin.png';
+import BoldIcon from '../assets/icons/bold.png';
+import ItalicIcon from '../assets/icons/italic.png';
+import UnderlineIcon from '../assets/icons/underlined.png';
+import SmileyIcon from '../assets/icons/smiley.png';
+
+export default defineComponent({
+  name: 'CreateTask',
+  components: {
+    SidebarMenu,
+  },
+  data() {
+    return {
+      CoinIcon,
+      BoldIcon,
+      ItalicIcon,
+      UnderlineIcon,
+      SmileyIcon,
+    };
+  },
+});
+</script>
+
+<style scoped>
+.main-page {
+  display: flex;
+  height: 100vh;
+  background: #1b263b;
+  font-family: 'Arial', sans-serif;
+  overflow-y: auto;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  color: white;
+}
+
+.title {
+  font-size: 40px;
+  margin-top: -10px;
+  text-align: left;
+  font-weight: bold;
+}
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.icon-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.icon-button {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.icon-button:hover {
+  background-color: #f0f0f0;
+}
+
+.icon-button img {
+  width: 20px;
+  height: 20px;
+}
+
+.form-control {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+textarea.form-control {
+  resize: vertical;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-start;
+}
+
+.wider-width {
+  flex: 0 0 350px;
+}
+
+.compact-width {
+  flex: 0 0 150px;
+}
+
+.reward-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.reward-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  text-align: left;
+}
+
+.same-height {
+  height: 42px;
+}
+
+.coin-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+</style>
