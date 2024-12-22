@@ -3,7 +3,15 @@
       <aside class="sidebar">
         <div class="profile" @click="logout">
           <img class="avatar" :src="userAvatar" alt="Avatar" />
-          <p class="username">{{ username }}</p>
+          <div class="profile-info">
+            <p class="username">{{ username }}</p>
+            <p class="level">Уровень: {{ userLevel }}</p>
+            <p class="rank">Ранг: {{ userRank }}</p>
+          </div>
+          <div class="coins">
+            <img class="coin-icon" :src="CoinIcon" alt="Coins" />
+            <span>{{ userCoins }}</span>
+          </div>
         </div>
         <ul class="menu">
           <li>Главная</li>
@@ -37,16 +45,21 @@
   import axios from 'axios';
   import FilterIcon from '../assets/icons/filter.png';
   import AddIcon from '../assets/icons/add.png';
+  import CoinIcon from '../assets/icons/coin.png';
   
   export default defineComponent({
     name: 'MainPage',
     data() {
       return {
         username: '',
-        userAvatar: 'https://via.placeholder.com/60',
+        userAvatar: 'https://via.placeholder.com/70',
+        userLevel: 1,
+        userRank: 'Новичок',
+        userCoins: 0,
         searchQuery: '',
         FilterIcon,
         AddIcon,
+        CoinIcon,
       };
     },
     async created() {
@@ -56,14 +69,14 @@
         return;
       }
       try {
-        const response = await axios.get(
-          'http://localhost:8000/api/users/me/',
-          {
-            headers: { Authorization: `Token ${token}` },
-          }
-        );
+        const response = await axios.get('http://localhost:8000/api/users/me/', {
+          headers: { Authorization: `Token ${token}` },
+        });
         this.username = response.data.username;
         this.userAvatar = `http://localhost:8000${response.data.avatar}`;
+        this.userLevel = response.data.level || 1;
+        this.userRank = response.data.rank || 'Новичок';
+        this.userCoins = response.data.coins || 0;
       } catch (error) {
         console.error('Ошибка загрузки данных пользователя:', error);
         this.$router.push('/');
@@ -75,7 +88,7 @@
         this.$router.push('/');
       },
       createTask() {
-        console.log('Создание задачи');
+        this.$router.push('/create-task');
       },
     },
   });
@@ -103,15 +116,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 15px;
-    padding: 10px;
     background: #ffffff;
     border-radius: 8px;
-    width: 100%;
-    height: 110px;
+    padding: 15px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
     transition: background 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    width: 100%;
   }
   
   .profile:hover {
@@ -119,24 +131,51 @@
   }
   
   .avatar {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
-    margin-bottom: 5px;
-    border: 2px solid #0d1b2a;
+    margin-bottom: 10px;
+    border: 3px solid #0d1b2a;
+  }
+  
+  .profile-info {
+    text-align: center;
+    margin-bottom: 15px;
   }
   
   .username {
     color: #0d1b2a;
     font-weight: bold;
-    font-size: 16px;
-    text-align: center;
+    font-size: 18px;
+    margin: 5px 0;
+  }
+  
+  .level,
+  .rank {
+    color: #7a7a7a;
+    font-size: 14px;
+    margin: 2px 0;
+  }
+  
+  .coins {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: 10px;
+    gap: 5px;
+  }
+  
+  .coin-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 5px;
   }
   
   .menu {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 20px 0 0;
     width: 100%;
   }
   
