@@ -28,6 +28,9 @@
               <button type="button" class="icon-button">
                 <img :src="UnderlineIcon" alt="Underline" />
               </button>
+              <button type="button" class="icon-button">
+                <img :src="SmileyIcon" alt="Emoji" />
+              </button>
             </div>
             <textarea
               id="description"
@@ -48,10 +51,13 @@
                 required
               >
                 <option value="" disabled selected>Выберите категорию</option>
-                <option value="design">Дизайн</option>
-                <option value="development">Разработка</option>
-                <option value="writing">Написание текста</option>
-                <option value="other">Другое</option>
+                <option
+                  v-for="category in categories"
+                  :key="category.name"
+                  :value="category.name"
+                >
+                  {{ category.name }}
+                </option>
               </select>
             </div>
   
@@ -114,6 +120,7 @@
   import BoldIcon from '../assets/icons/bold.png';
   import ItalicIcon from '../assets/icons/italic.png';
   import UnderlineIcon from '../assets/icons/underlined.png';
+  import SmileyIcon from '../assets/icons/smiley.png';
   
   export default defineComponent({
     name: 'CreateTask',
@@ -126,12 +133,25 @@
         BoldIcon,
         ItalicIcon,
         UnderlineIcon,
+        SmileyIcon,
         title: '',
         description: '',
         category: '',
         reward: 0,
         tags: '',
         files: [] as File[],
+        categories: [
+          { name: 'Животные', color: '#FF5733' },
+          { name: 'Здоровье', color: '#33FF57' },
+          { name: 'Доставка', color: '#5733FF' },
+          { name: 'Образование', color: '#FFC300' },
+          { name: 'Ремонт', color: '#C70039' },
+          { name: 'Садоводство', color: '#900C3F' },
+          { name: 'Спорт', color: '#581845' },
+          { name: 'Технологии', color: '#33FFF6' },
+          { name: 'Транспорт', color: '#A569BD' },
+          { name: 'Другое', color: '#7DCEA0' },
+        ],
       };
     },
     methods: {
@@ -154,12 +174,16 @@
           formData.append('tags', this.tags);
           this.files.forEach((file) => formData.append('files', file));
   
-          const response = await axios.post('http://localhost:8000/api/tasks/', formData, {
-            headers: {
-              Authorization: `Token ${token}`,
-              'Content-Type': 'multipart/form-data',
-            },
-          });
+          const response = await axios.post(
+            'http://localhost:8000/api/tasks/',
+            formData,
+            {
+              headers: {
+                Authorization: `Token ${token}`,
+                'Content-Type': 'multipart/form-data',
+              },
+            }
+          );
           alert('Задание успешно создано!');
           console.log(response.data);
         } catch (error) {

@@ -13,7 +13,14 @@
           </div>
           <div class="task-meta">
             <div class="circle-placeholder"></div>
-            <p class="task-category">{{ task.category }}</p>
+            <div class="task-category">
+              <span class="category-dot" :style="{ backgroundColor: task.categoryColor }"></span>
+              {{ task.category }}
+            </div>
+            <div class="task-reward">
+              <img class="reward-icon" :src="rewardIcon" alt="Монеты" />
+              <span class="reward-amount">{{ task.reward }}</span>
+            </div>
           </div>
         </li>
       </ul>
@@ -22,6 +29,7 @@
   
   <script>
   import axios from 'axios';
+  import rewardIcon from '../assets/icons/coin.png';
   
   export default {
     name: 'TaskList',
@@ -30,6 +38,7 @@
       return {
         tasks: [],
         socket: null,
+        rewardIcon,
       };
     },
     watch: {
@@ -61,6 +70,7 @@
           this.tasks = response.data.map(task => ({
             ...task,
             tags: task.tags ? task.tags.split(',').map(tag => tag.trim()) : [],
+            categoryColor: this.getCategoryColor(task.category),
           }));
         } catch (error) {
           console.error('Ошибка при загрузке задач:', error);
@@ -70,14 +80,28 @@
         this.socket = new WebSocket('ws://localhost:8000/ws/tasks/');
         this.socket.onmessage = (event) => {
           const data = JSON.parse(event.data);
-          if (data.tags) {
-            data.tags = data.tags.split(',').map(tag => tag.trim());
-          }
+          data.tags = data.tags ? data.tags.split(',').map(tag => tag.trim()) : [];
+          data.categoryColor = this.getCategoryColor(data.category);
           this.tasks.push(data);
         };
         this.socket.onclose = () => {
           console.error('WebSocket закрыт');
         };
+      },
+      getCategoryColor(category) {
+        const categoryColors = {
+          Животные: '#FF5733',
+          Здоровье: '#33FF57',
+          Доставка: '#5733FF',
+          Образование: '#FFC300',
+          Ремонт: '#C70039',
+          Садоводство: '#900C3F',
+          Спорт: '#581845',
+          Технологии: '#33FFF6',
+          Транспорт: '#A569BD',
+          Другое: '#7DCEA0',
+        };
+        return categoryColors[category] || '#555';
       },
     },
   };
@@ -124,7 +148,7 @@
     font-size: 14px;
     color: #555;
     display: -webkit-box;
-    -webkit-line-clamp: 3; 
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     line-clamp: 3;
     overflow: hidden;
@@ -150,6 +174,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 10px;
   }
   
   .circle-placeholder {
@@ -157,13 +182,36 @@
     height: 40px;
     border-radius: 50%;
     background: #ddd;
-    margin-bottom: 5px;
   }
   
   .task-category {
     font-size: 14px;
     color: #555;
     margin: 0;
-    text-align: center;
+    display: flex;
+    align-items: center;
+  }
+  
+  .category-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+  
+  .task-reward {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .reward-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .reward-amount {
+    font-size: 14px;
+    color: #555;
   }
   </style>  
