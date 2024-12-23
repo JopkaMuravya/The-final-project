@@ -12,7 +12,23 @@
             </div>
           </div>
           <div class="task-meta">
-            <div class="circle-placeholder"></div>
+            <div class="user-section">
+              <img
+                v-if="task.user && task.user.avatar"
+                class="user-avatar"
+                :src="task.user.avatar"
+                alt="Avatar"
+              />
+              <img
+                v-else
+                class="user-avatar"
+                src="https://via.placeholder.com/40"
+                alt="Default Avatar"
+              />
+              <p class="user-name">
+                {{ task.user && task.user.username ? task.user.username : 'Анонимус' }}
+              </p>
+            </div>
             <div class="task-category">
               <span class="category-dot" :style="{ backgroundColor: task.categoryColor }"></span>
               {{ task.category }}
@@ -67,9 +83,9 @@
               search: this.searchQuery,
             },
           });
-          this.tasks = response.data.map(task => ({
+          this.tasks = response.data.map((task) => ({
             ...task,
-            tags: task.tags ? task.tags.split(',').map(tag => tag.trim()) : [],
+            tags: task.tags ? task.tags.split(',').map((tag) => tag.trim()) : [],
             categoryColor: this.getCategoryColor(task.category),
           }));
         } catch (error) {
@@ -80,7 +96,7 @@
         this.socket = new WebSocket('ws://localhost:8000/ws/tasks/');
         this.socket.onmessage = (event) => {
           const data = JSON.parse(event.data);
-          data.tags = data.tags ? data.tags.split(',').map(tag => tag.trim()) : [];
+          data.tags = data.tags ? data.tags.split(',').map((tag) => tag.trim()) : [];
           data.categoryColor = this.getCategoryColor(data.category);
           this.tasks.push(data);
         };
@@ -177,11 +193,24 @@
     gap: 10px;
   }
   
-  .circle-placeholder {
+  .user-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .user-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     background: #ddd;
+    object-fit: cover;
+  }
+  
+  .user-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
   }
   
   .task-category {

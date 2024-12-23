@@ -4,10 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
-from .serializers import UserSerializer, TaskSerializer
-from .models import Task
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from .serializers import UserSerializer, TaskSerializer
+from .models import Task
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -60,7 +60,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def notify_task_created(self, task):
         channel_layer = get_channel_layer()
-        task_data = TaskSerializer(task).data
+        task_data = TaskSerializer(task).data  
         async_to_sync(channel_layer.group_send)(
             "tasks",
             {
