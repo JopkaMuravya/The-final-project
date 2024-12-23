@@ -24,7 +24,9 @@
           <span class="task-column task-reward-column">Вознаграждение</span>
         </div>
   
-        <TaskList :searchQuery="searchQuery" />
+        <div class="task-list-wrapper">
+          <TaskList :searchQuery="searchQuery" />
+        </div>
       </div>
     </div>
   </template>
@@ -68,22 +70,44 @@
   .content {
     flex: 1;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; 
   }
   
   .task-header {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr; 
+    grid-template-columns: 2fr 1fr 1fr 1fr;
     padding: 10px 0;
     color: white;
     font-weight: bold;
     margin-bottom: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    gap: 20px;
   }
   
   .task-column {
     text-align: left;
     font-size: 16px;
+  }
+  
+  .task-list-wrapper {
+    flex: 1; 
+    overflow-y: auto; 
+    padding-right: 10px; 
+    scrollbar-width: thin; 
+  }
+  
+  .task-list-wrapper::-webkit-scrollbar {
+    width: 8px; 
+  }
+  
+  .task-list-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5); 
+    border-radius: 4px;
+  }
+  
+  .task-list-wrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.8); 
   }
   
   .task-title-column {
@@ -114,7 +138,7 @@
     background: #0d1b2a;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-top: -10px;
+    margin-bottom: 10px;
   }
   
   .search-input {

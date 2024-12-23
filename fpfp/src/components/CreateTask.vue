@@ -186,6 +186,9 @@
           );
           alert('Задание успешно создано!');
           console.log(response.data);
+  
+          // Перенаправление на главную страницу
+          this.$router.push('/main');
         } catch (error) {
           console.error('Ошибка при создании задания:', error);
           alert('Ошибка при создании задания.');
