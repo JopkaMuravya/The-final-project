@@ -10,7 +10,6 @@ class TaskConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard("tasks", self.channel_name)
 
     async def receive(self, text_data):
-        # Получение сообщения от клиента
         data = json.loads(text_data)
         await self.channel_layer.group_send(
             "tasks",
