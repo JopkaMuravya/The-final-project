@@ -7,7 +7,8 @@ from rest_framework.authtoken.models import Token
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from .serializers import UserSerializer, TaskSerializer
-from .models import Task
+from .models import Task, CustomUser
+from decimal import Decimal
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -49,6 +50,24 @@ class CurrentUserView(APIView):
         })
 
 
+class UpdateBalanceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        amount = request.data.get('amount', 0)
+
+        try:
+            amount = abs(Decimal(amount))
+            if user.balance < amount:
+                return Response({"error": "Недостаточно средств на балансе."}, status=status.HTTP_400_BAD_REQUEST)
+            user.balance -= amount
+            user.save()
+            return Response({"message": "Баланс успешно обновлен.", "balance": user.balance}, status=status.HTTP_200_OK)
+        except (ValueError, Decimal.InvalidOperation):
+            return Response({"error": "Некорректное значение суммы."}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
@@ -60,7 +79,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def notify_task_created(self, task):
         channel_layer = get_channel_layer()
-        task_data = TaskSerializer(task).data  
+        task_data = TaskSerializer(task).data
         async_to_sync(channel_layer.group_send)(
             "tasks",
             {

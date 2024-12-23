@@ -69,11 +69,15 @@
                   id="reward"
                   class="reward-input form-control same-height"
                   v-model="reward"
+                  :max="currentBalance"
                   placeholder="0"
                   min="0"
                 />
                 <img class="coin-icon" :src="CoinIcon" alt="Монеты" />
               </div>
+              <p v-if="reward > currentBalance" class="error-message">
+                Вознаграждение превышает ваш баланс ({{ currentBalance }}).
+              </p>
             </div>
           </div>
   
@@ -103,7 +107,7 @@
             <button type="button" class="btn btn-secondary" @click="goBack">
               Назад
             </button>
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" :disabled="reward > currentBalance">
               Создать
             </button>
           </div>
@@ -138,6 +142,7 @@
         description: '',
         category: '',
         reward: 0,
+        currentBalance: 0,
         tags: '',
         files: [] as File[],
         categories: [
@@ -154,7 +159,27 @@
         ],
       };
     },
+    async created() {
+      await this.fetchCurrentBalance();
+    },
     methods: {
+      async fetchCurrentBalance() {
+        try {
+          const token = localStorage.getItem('authToken');
+          if (!token) throw new Error('Вы не авторизованы.');
+  
+          const response = await axios.get('http://localhost:8000/api/users/me/', {
+            headers: {
+              Authorization: `Token ${token}`,
+            },
+          });
+  
+          this.currentBalance = response.data.balance;
+        } catch (error) {
+          console.error('Ошибка при получении баланса:', error);
+          alert('Не удалось получить баланс.');
+        }
+      },
       handleFileUpload(event: Event) {
         const target = event.target as HTMLInputElement;
         if (target.files) {
@@ -166,28 +191,37 @@
           const token = localStorage.getItem('authToken');
           if (!token) throw new Error('Вы не авторизованы.');
   
-          const formData = new FormData();
-          formData.append('title', this.title);
-          formData.append('description', this.description);
-          formData.append('category', this.category);
-          formData.append('reward', this.reward.toString());
-          formData.append('tags', this.tags);
-          this.files.forEach((file) => formData.append('files', file));
+          if (this.reward > this.currentBalance) {
+            alert('Вознаграждение не может превышать текущий баланс.');
+            return;
+          }
   
-          const response = await axios.post(
-            'http://localhost:8000/api/tasks/',
-            formData,
+          const formData = {
+            title: this.title,
+            description: this.description,
+            category: this.category,
+            reward: this.reward,
+          };
+  
+          // Создание задачи
+          await axios.post('http://localhost:8000/api/tasks/', formData, {
+            headers: {
+              Authorization: `Token ${token}`,
+            },
+          });
+  
+          // Вычитание вознаграждения из баланса
+          await axios.post(
+            'http://localhost:8000/api/users/me/update-balance/',
+            { amount: -this.reward },
             {
               headers: {
                 Authorization: `Token ${token}`,
-                'Content-Type': 'multipart/form-data',
               },
             }
           );
-          alert('Задание успешно создано!');
-          console.log(response.data);
   
-          // Перенаправление на главную страницу
+          alert('Задание успешно создано!');
           this.$router.push('/main');
         } catch (error) {
           console.error('Ошибка при создании задания:', error);
@@ -344,5 +378,10 @@
   
   .btn-secondary:hover {
     background-color: #5a6268;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 12px;
   }
   </style>  
