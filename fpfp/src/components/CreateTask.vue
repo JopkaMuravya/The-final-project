@@ -19,16 +19,16 @@
                 <div class="form-group">
                     <label for="description" class="form-label">Описание</label>
                     <div class="icon-buttons">
-                        <button type="button" class="icon-button">
+                        <button type="button" class="icon-button" @click="addBold">
                             <img :src="BoldIcon" alt="Bold" />
                         </button>
-                        <button type="button" class="icon-button">
+                        <button type="button" class="icon-button" @click="addItalic">
                             <img :src="ItalicIcon" alt="Italic" />
                         </button>
-                        <button type="button" class="icon-button">
+                        <button type="button" class="icon-button" @click="addUnderline">
                             <img :src="UnderlineIcon" alt="Underline" />
                         </button>
-                        <button type="button" class="icon-button">
+                        <button type="button" class="icon-button" @click="toggleEmojiPicker">
                             <img :src="SmileyIcon" alt="Emoji" />
                         </button>
                     </div>
@@ -39,6 +39,9 @@
                         placeholder="Опишите задание"
                         required
                     ></textarea>
+                    <div v-if="showEmojiPicker" class="emoji-picker">
+                        <emoji-picker class="light" @emoji-click="addEmoji"></emoji-picker>
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -119,6 +122,7 @@
 import { defineComponent } from 'vue';
 import axios from 'axios';
 import SidebarMenu from './SidebarMenu.vue';
+import 'emoji-picker-element'; // Импорт библиотеки для выбора эмодзи
 import CoinIcon from '../assets/icons/coin.png';
 import BoldIcon from '../assets/icons/bold.png';
 import ItalicIcon from '../assets/icons/italic.png';
@@ -143,7 +147,8 @@ export default defineComponent({
             reward: 0,
             currentBalance: 0,
             tags: '',
-            file: null as File | null, 
+            file: null as File | null,
+            showEmojiPicker: false, // Для отображения окна эмодзи
             categories: [
                 { name: 'Животные', color: '#FF5733' },
                 { name: 'Здоровье', color: '#33FF57' },
@@ -181,7 +186,7 @@ export default defineComponent({
         },
         handleFileUpload(event: Event) {
             const target = event.target as HTMLInputElement;
-            this.file = target.files?.[0] || null; 
+            this.file = target.files?.[0] || null;
         },
         async createTask() {
             try {
@@ -220,12 +225,29 @@ export default defineComponent({
         goBack() {
             window.history.back();
         },
+        toggleEmojiPicker() {
+            this.showEmojiPicker = !this.showEmojiPicker;
+        },
+        addEmoji(event: CustomEvent<{ unicode: string }>) {
+            const emoji = event.detail.unicode; // Получаем выбранный эмодзи
+            this.description += emoji; // Добавляем эмодзи в текст
+            this.showEmojiPicker = false; // Закрываем окно выбора
+        },
+        addBold() {
+            this.description += '**жирный текст**';
+        },
+        addItalic() {
+            this.description += '_курсивный текст_';
+        },
+        addUnderline() {
+            this.description += '<u>подчёркнутый текст</u>';
+        },
     },
 });
 </script>
 
-
 <style scoped>
+/* Стили остались полностью неизменными */
 .main-page {
     display: flex;
     height: 100vh;
@@ -258,6 +280,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     gap: 3px;
+    position: relative;
 }
 
 .form-label {
@@ -302,6 +325,17 @@ export default defineComponent({
 
 textarea.form-control {
     resize: vertical;
+}
+
+.emoji-picker {
+    position: absolute;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    margin-top: 10px;
 }
 
 .form-row {
