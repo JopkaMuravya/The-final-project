@@ -19,6 +19,8 @@ from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from .tokens import account_activation_token
 from django.shortcuts import render, redirect
+from rest_framework.decorators import action
+
 
 class UserViewSet(viewsets.ViewSet):
     def create(self, request):
@@ -119,3 +121,18 @@ class TaskViewSet(viewsets.ModelViewSet):
                 "message": task_data,
             },
         )
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def take(self, request, pk=None):
+        task = self.get_object()
+
+        if task.user == request.user:
+            return Response({"error": "Нельзя брать собственное задание."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if task.executor is not None:
+            return Response({"error": "Задание уже взято другим исполнителем."}, status=status.HTTP_400_BAD_REQUEST)
+
+        task.executor = request.user
+        task.save()
+
+        return Response(TaskSerializer(task).data, status=status.HTTP_200_OK)

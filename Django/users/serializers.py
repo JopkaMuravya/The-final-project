@@ -19,8 +19,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    executor = UserSerializer(read_only=True)
 
     class Meta:
         model = Task
-        fields = ['id', 'user', 'title', 'description', 'category', 'reward', 'tags', 'created_at']
-        read_only_fields = ['id', 'created_at', 'user']
+        fields = ['id', 'user', 'executor', 'title', 'description', 'category', 'reward', 'tags', 'created_at']
+        read_only_fields = ['id', 'created_at', 'user', 'executor']
