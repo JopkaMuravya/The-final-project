@@ -6,7 +6,7 @@
                 <div class="scrollable-content">
                     <h2 class="task-title">{{ task.title }}</h2>
                     <p class="task-description">{{ task.description }}</p>
-                    
+
                     <div v-if="task.image" class="task-image-wrapper">
                         <img 
                             :src="task.image" 
@@ -22,6 +22,10 @@
                             <span class="category-value" :style="{ color: getCategoryColor(task.category) }">
                                 {{ task.category }}
                             </span>
+                        </div>
+                        <div class="task-info">
+                            <span class="info-label">Дата создания: </span>
+                            {{ formatDate(task.created_at) }}
                         </div>
                         <div class="task-info">
                             <span class="info-label">Вознаграждение: </span>
@@ -162,6 +166,10 @@ export default {
         getCategoryColor(categoryName) {
             const category = this.categories.find((cat) => cat.name === categoryName);
             return category ? category.color : '#ffffff';
+        },
+        formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('ru-RU', options);
         },
         closeModal() {
             this.showImageModal = false;
