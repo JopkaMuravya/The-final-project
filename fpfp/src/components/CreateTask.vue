@@ -122,7 +122,7 @@
 import { defineComponent } from 'vue';
 import axios from 'axios';
 import SidebarMenu from './SidebarMenu.vue';
-import 'emoji-picker-element'; // Импорт библиотеки для выбора эмодзи
+import 'emoji-picker-element'; 
 import CoinIcon from '../assets/icons/coin.png';
 import BoldIcon from '../assets/icons/bold.png';
 import ItalicIcon from '../assets/icons/italic.png';
@@ -148,7 +148,7 @@ export default defineComponent({
             currentBalance: 0,
             tags: '',
             file: null as File | null,
-            showEmojiPicker: false, // Для отображения окна эмодзи
+            showEmojiPicker: false, 
             categories: [
                 { name: 'Животные', color: '#FF5733' },
                 { name: 'Здоровье', color: '#33FF57' },
@@ -229,9 +229,9 @@ export default defineComponent({
             this.showEmojiPicker = !this.showEmojiPicker;
         },
         addEmoji(event: CustomEvent<{ unicode: string }>) {
-            const emoji = event.detail.unicode; // Получаем выбранный эмодзи
-            this.description += emoji; // Добавляем эмодзи в текст
-            this.showEmojiPicker = false; // Закрываем окно выбора
+            const emoji = event.detail.unicode; 
+            this.description += emoji; 
+            this.showEmojiPicker = false; 
         },
         addBold() {
             this.description += '**жирный текст**';
@@ -247,7 +247,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Стили остались полностью неизменными */
 .main-page {
     display: flex;
     height: 100vh;
