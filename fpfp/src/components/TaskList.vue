@@ -1,7 +1,12 @@
 <template>
     <div class="task-list">
       <ul class="task-container">
-        <li v-for="task in tasks" :key="task.id" class="task-item">
+        <li
+          v-for="task in tasks"
+          :key="task.id"
+          class="task-item"
+          @click="$router.push(`/task/${task.id}`)"
+        >
           <div class="task-content">
             <h3 class="task-title">{{ task.title }}</h3>
             <p class="task-description">{{ task.description }}</p>
@@ -96,7 +101,9 @@
         this.socket = new WebSocket('ws://localhost:8000/ws/tasks/');
         this.socket.onmessage = (event) => {
           const data = JSON.parse(event.data);
-          data.tags = data.tags ? data.tags.split(',').map((tag) => tag.trim()) : [];
+          data.tags = data.tags
+            ? data.tags.split(',').map((tag) => tag.trim())
+            : [];
           data.categoryColor = this.getCategoryColor(data.category);
           this.tasks.push(data);
         };
@@ -143,6 +150,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 5px 20px;
     margin-bottom: 15px;
+    cursor: pointer;
   }
   
   .task-content {
