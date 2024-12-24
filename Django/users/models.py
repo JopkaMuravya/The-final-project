@@ -15,6 +15,7 @@ class CustomUser(AbstractUser):
 
 class Task(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tasks')
+    executor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks_taken')
     title = models.CharField(max_length=255)
     description = models.TextField()
     category = models.CharField(max_length=50)

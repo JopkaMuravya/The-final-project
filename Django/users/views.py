@@ -9,6 +9,7 @@ from channels.layers import get_channel_layer
 from .serializers import UserSerializer, TaskSerializer
 from .models import Task, CustomUser
 from decimal import Decimal
+from rest_framework.decorators import action
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -87,3 +88,18 @@ class TaskViewSet(viewsets.ModelViewSet):
                 "message": task_data,
             },
         )
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def take(self, request, pk=None):
+        task = self.get_object()
+
+        if task.user == request.user:
+            return Response({"error": "Нельзя брать собственное задание."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if task.executor is not None:
+            return Response({"error": "Задание уже взято другим исполнителем."}, status=status.HTTP_400_BAD_REQUEST)
+
+        task.executor = request.user
+        task.save()
+
+        return Response(TaskSerializer(task).data, status=status.HTTP_200_OK)

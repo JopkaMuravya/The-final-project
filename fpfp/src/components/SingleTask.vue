@@ -9,10 +9,7 @@
             <div class="task-details">
               <div class="task-info">
                 <span class="info-label">Категория: </span>
-                <span
-                  class="category-value"
-                  :style="{ color: getCategoryColor(task.category) }"
-                >
+                <span class="category-value" :style="{ color: getCategoryColor(task.category) }">
                   {{ task.category }}
                 </span>
               </div>
@@ -27,12 +24,33 @@
               </div>
             </div>
           </div>
-          <button class="take-task-button" @click="takeTask">Взять задание</button>
+          <template v-if="task.user?.username === currentUser.username">
+            <div class="task-status">
+              <p><strong>Вы автор этого задания.</strong></p>
+              <p>
+                Статус:
+                <span v-if="task.executor">
+                  Задание взято исполнителем {{ task.executor.username }}
+                  <button class="complete-task-button" @click="markAsCompleted">Задание выполнено</button>
+                </span>
+                <span v-else>Задание пока никем не взято</span>
+              </p>
+            </div>
+          </template>
+          <template v-else>
+            <button v-if="task.executor" class="take-task-button" disabled>
+              {{ task.executor.username === currentUser.username ? 'Ваше задание' : 'Задание уже взято' }}
+            </button>
+            <button v-else class="take-task-button" @click="takeTask">
+              Взять задание
+            </button>
+          </template>
         </div>
-  
         <div class="chat-container">
           <div class="scrollable-content">
-            <h3 class="chat-title">Чат с заказчиком</h3>
+            <h3 class="chat-title">
+              {{ task.user?.username === currentUser.username ? "Чат с исполнителем" : "Чат с заказчиком" }}
+            </h3>
             <div class="chat-messages">
               <p class="chat-message"><strong>Заказчик:</strong> Добрый день, уточните, сможете ли выполнить до конца недели?</p>
               <p class="chat-message"><strong>Вы:</strong> Да, я смогу выполнить задание в указанный срок.</p>
@@ -43,8 +61,14 @@
               type="text"
               class="chat-input"
               placeholder="Напишите сообщение..."
+              :disabled="!task.executor || (!isChatAccessible && task.executor.username !== currentUser.username)"
             />
-            <button class="send-button">Отправить</button>
+            <button
+              class="send-button"
+              :disabled="!task.executor || (!isChatAccessible && task.executor.username !== currentUser.username)"
+            >
+              Отправить
+            </button>
           </div>
         </div>
       </div>
@@ -64,6 +88,8 @@
     data() {
       return {
         task: null,
+        currentUser: null,
+        isChatAccessible: false,
         categories: [
           { name: 'Животные', color: '#FF5733' },
           { name: 'Здоровье', color: '#33FF57' },
@@ -89,8 +115,19 @@
           },
         });
         this.task = response.data;
+  
+        const userResponse = await axios.get('http://localhost:8000/api/users/me/', {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        });
+        this.currentUser = userResponse.data;
+  
+        if (this.task.executor || this.task.user.username === this.currentUser.username) {
+          this.isChatAccessible = true;
+        }
       } catch (error) {
-        console.error('Ошибка загрузки задачи:', error);
+        console.error('Ошибка загрузки данных:', error);
       }
     },
     methods: {
@@ -102,7 +139,7 @@
         const taskId = this.$route.params.id;
         const token = localStorage.getItem('authToken');
         try {
-          await axios.post(
+          const response = await axios.post(
             `http://localhost:8000/api/tasks/${taskId}/take/`,
             {},
             {
@@ -111,9 +148,32 @@
               },
             }
           );
+          this.task = response.data;
           alert('Задание успешно взято!');
+          this.isChatAccessible = true;
         } catch (error) {
-          console.error('Ошибка при взятии задания:', error);
+          const errorMessage = error.response?.data?.error || 'Ошибка при взятии задания';
+          alert(errorMessage);
+          console.error('Ошибка:', errorMessage);
+        }
+      },
+      async markAsCompleted() {
+        const taskId = this.$route.params.id;
+        const token = localStorage.getItem('authToken');
+        try {
+          await axios.post(
+            `http://localhost:8000/api/tasks/${taskId}/complete/`,
+            {},
+            {
+              headers: {
+                Authorization: `Token ${token}`,
+              },
+            }
+          );
+          alert('Задание успешно помечено как выполненное!');
+          this.task.executor = null;
+        } catch (error) {
+          console.error('Ошибка при завершении задания:', error);
         }
       },
     },
@@ -121,6 +181,76 @@
   </script>
   
   <style scoped>
+  .complete-task-button {
+    margin-left: 10px;
+    padding: 8px 12px;
+    background: #ffc107;
+    color: #1b263b;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .complete-task-button:hover {
+    background: #e0a800;
+  }
+
+  .single-task-page {
+    display: flex;
+    height: 100vh;
+    background: #1b263b;
+    font-family: 'Arial', sans-serif;
+    color: white;
+  }
+  
+  .content {
+    flex: 1;
+    padding: 40px 20px;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .task-container,
+  .chat-container {
+    flex: 1;
+    padding: 20px;
+    background: #0d1b2a;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .task-status {
+    font-size: 16px;
+    margin-top: 10px;
+    color: #ffffff;
+  }
+  
+  .task-status p {
+    margin: 5px 0;
+  }
+  
+  .take-task-button {
+    margin-top: 20px;
+    padding: 15px 20px;
+    background: #28a745;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .take-task-button:hover {
+    background: #218838;
+  }
+
   .single-task-page {
     display: flex;
     height: 100vh;
@@ -280,4 +410,3 @@
     background: #218838;
   }
   </style>
-  
