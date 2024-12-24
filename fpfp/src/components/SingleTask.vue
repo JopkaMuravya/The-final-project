@@ -182,7 +182,7 @@
   
   <style scoped>
   .complete-task-button {
-    margin-left: 10px;
+    margin-left: 50px;
     padding: 8px 12px;
     background: #ffc107;
     color: #1b263b;
