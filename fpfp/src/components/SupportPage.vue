@@ -1,42 +1,51 @@
 <template>
-<main>
-    <div class="title">Тех. поддержка</div>
-    <div class="title-info">Мы скоро с вами свяжемся!</div>
-
-    <form action="" method="" class="form">
-        <div class="input-group">
-            <input type="text" name="first_name" id="first-name" placeholder="First name">
-            <label for="first-name">Имя</label>
+    <div class="main-cont">
+        <div class="side-bar">
+            <SidebarMenu />
         </div>
-        
-        <div class="input-group">
-            <input type="text" name="last_name" id="last-name" placeholder="Last Name">
-            <label for="last-name">Фамилия</label>
-        </div>
+        <div class="main-page">
+            <main>
+                <div class="title">Тех. поддержка</div>
+                <div class="title-info">Мы скоро с вами свяжемся!</div>
 
-        <div class="input-group">
-            <input type="email" name="e-mail" id="e-mail" placeholder="e-mail">
-            <label for="e-mail">e-mail</label>
-        </div>
+                <form action="" method="" class="form">
+                    <!-- <div class="input-group">
+                        <input type="text" name="first_name" id="first-name" placeholder="First name">
+                        <label for="first-name">Имя</label>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="text" name="last_name" id="last-name" placeholder="Last Name">
+                        <label for="last-name">Фамилия</label>
+                    </div> -->
 
-        <div class="textarea-group">
-            <textarea name="message" id="message" rows="4" placeholder="Message"></textarea>
-            <label for="message">Сообщение</label>
-        </div>
+                    <div class="input-group">
+                        <label for="e-mail">e-mail</label>
+                        <input type="email" name="e-mail" id="e-mail" placeholder="Е-mail">
+                    </div>
 
-        <div class="button-div">
-            <button type="submit">Отправить</button>
-        </div>
-    </form>
-</main>
+                    <div class="textarea-group">
+                        <label for="message">Сообщение</label>
+                        <textarea name="message" id="message" rows="6" placeholder="Сообщение"></textarea>
+                    </div>
 
-<footer>
-    <a href="https://github.com/JopkaMuravya/From-people-for-people" target="_blank"><img class="social-media-img" src="../assets/icons/github.svg" alt="GitHub"></a>
-</footer>
+                    <div class="button-div">
+                        <button type="submit">Отправить</button>
+                    </div>
+                </form>
+            </main>
+
+            <footer>
+                <a href="https://github.com/JopkaMuravya/From-people-for-people" target="_blank"><img class="social-media-img" src="../assets/icons/github.svg" alt="GitHub"></a>
+            </footer>
+        </div>
+    </div>
+
 </template>
   
 <script>
 import axios from 'axios';
+import SidebarMenu from './SidebarMenu.vue';
 // import { useRouter } from 'vue-router';
 
 // import facebookimg from '../assets/icons/facebook.svg';
@@ -47,6 +56,9 @@ import axios from 'axios';
 // import youtubeimg from '../assets/icons/youtube.svg';
 
 export default {
+components: {
+    SidebarMenu,
+},
 
 methods: {
     async login() {
@@ -71,12 +83,52 @@ methods: {
 };
 </script>
 
+<!-- <style scoped>
+    .title {
+        font-size: 50px;
+        font-weight: bold;
+        padding: 1.5% 0;
+        color: white;
+    }
+
+    .title-info {
+        padding-bottom: 2%;
+        color: white;
+    }
+
+    .form {
+        display: flex;
+        flex-direction: column;
+        width: 60%;
+        padding: 2%;
+    }
+
+    .input-group, .textarea-group {
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+
+        background-color: white;
+    }
+</style> -->
+
 <style scoped>
 *
 {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+.main-cont {
+    display: flex;
+    flex-direction: row;
+}
+
+.main-page {
+    flex: 1;
 }
 
 main
@@ -113,19 +165,37 @@ main
 
 .input-group, .textarea-group
 {
-    padding: 1% 0;
-    color: #d3d3d3;
+    /* padding: 1% 0;
+    color: #d3d3d3; */
+
+    padding: 10px;
+    font-size: 14px;
+    /* border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white; */
+    margin-top: 10px;
 }
 
 input, textarea
 {
-    color: inherit;
+    /* color: inherit;
     width: 100%;
     background-color: transparent;
     border: none;
     border-bottom: 1px solid #757575;
     padding: 1.5%;
+    font-size: 20px; */
+
+    color: black;
+    width: 100%;
+    /* background-color: white; */
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white;
+    /* border-bottom: 1px solid #757575; */
+    padding: 1.5%;
     font-size: 20px;
+    margin-top: 10px;
 }
 
 /* .textarea-group label
@@ -139,41 +209,43 @@ textarea
     padding-top: 0;
 }
 
-input:focus, textarea:focus
+/* input:focus, textarea:focus
 {
     background-color: transparent;
     outline: transparent;
     border-bottom: 2px solid #69f0ae;
-}
+} */
 
-input::placeholder, textarea::placeholder
+/* input::placeholder, textarea::placeholder
 {
     color: transparent;
-}
+} */
 
 label
 {
-    color: #757575;
-    position: relative;
+    color: white;
+    /* position: relative; */
     left: 0.5em;
-    top: -2em;
+    /* top: -5\10em; */
 	cursor: auto;
-    transition: 0.3s ease all;
+    /* transition: 0.3s ease all; */
+    font-size: 25px;
+    font-weight: 600;
 }
 
-input:focus ~ label, input:not(:placeholder-shown) ~ label
+/* input:focus ~ label, input:not(:placeholder-shown) ~ label
 {
     top: -4em;
     color: #69f0ae;
     font-size: 15px;
-}
+} */
 
-textarea:focus ~ label, textarea:not(:placeholder-shown) ~ label
+/* textarea:focus ~ label, textarea:not(:placeholder-shown) ~ label
 {
     top: -10.5em;
     color: #69f0ae;
     font-size: 15px;
-}
+} */
 
 .button-div
 {
@@ -183,6 +255,7 @@ textarea:focus ~ label, textarea:not(:placeholder-shown) ~ label
 
 button
 {
+    margin-top: 10px;
     padding: 2%;
     width: 50%;
     border: 1px solid;
@@ -190,15 +263,16 @@ button
     border-radius: 5px;
     font-family: inherit;
     font-size: 18px;
-    background-color: #0E1B2B;
+    background-color: #0279FE;
     color: white;
+    font-weight: 600;
     box-shadow: 0 0 10px #212121;
 }
 
 button:hover
 {
-    background-color: #19304C;
-    color: #69f0ae;
+    background-color: #0050ac;
+    /* color: #69f0ae; */
     cursor: pointer;
 }
 
