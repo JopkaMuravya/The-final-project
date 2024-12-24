@@ -20,8 +20,9 @@ class UserSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     executor = UserSerializer(read_only=True)
+    image = serializers.ImageField(required=False)
 
     class Meta:
         model = Task
-        fields = ['id', 'user', 'executor', 'title', 'description', 'category', 'reward', 'tags', 'created_at']
+        fields = ['id', 'user', 'executor', 'title', 'description', 'category', 'reward', 'tags', 'created_at', 'image']
         read_only_fields = ['id', 'created_at', 'user', 'executor']

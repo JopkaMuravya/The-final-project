@@ -93,12 +93,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="files" class="form-label">Прикрепить файлы</label>
+                    <label for="files" class="form-label">Прикрепить файл</label>
                     <input
                         type="file"
                         id="files"
                         class="form-control"
-                        multiple
                         @change="handleFileUpload"
                     />
                 </div>
@@ -144,7 +143,7 @@ export default defineComponent({
             reward: 0,
             currentBalance: 0,
             tags: '',
-            files: [] as File[],
+            file: null as File | null, 
             categories: [
                 { name: 'Животные', color: '#FF5733' },
                 { name: 'Здоровье', color: '#33FF57' },
@@ -182,9 +181,7 @@ export default defineComponent({
         },
         handleFileUpload(event: Event) {
             const target = event.target as HTMLInputElement;
-            if (target.files) {
-                this.files = Array.from(target.files);
-            }
+            this.file = target.files?.[0] || null; 
         },
         async createTask() {
             try {
@@ -196,29 +193,22 @@ export default defineComponent({
                     return;
                 }
 
-                const formData = {
-                    title: this.title,
-                    description: this.description,
-                    category: this.category,
-                    reward: this.reward,
-                    tags: this.tags, 
-                };
+                const formData = new FormData();
+                formData.append('title', this.title);
+                formData.append('description', this.description);
+                formData.append('category', this.category);
+                formData.append('reward', this.reward.toString());
+                formData.append('tags', this.tags);
+                if (this.file) {
+                    formData.append('image', this.file);
+                }
 
                 await axios.post('http://localhost:8000/api/tasks/', formData, {
                     headers: {
                         Authorization: `Token ${token}`,
+                        'Content-Type': 'multipart/form-data',
                     },
                 });
-
-                await axios.post(
-                    'http://localhost:8000/api/users/me/update-balance/',
-                    { amount: -this.reward },
-                    {
-                        headers: {
-                            Authorization: `Token ${token}`,
-                        },
-                    }
-                );
 
                 alert('Задание успешно создано!');
                 this.$router.push('/main');
@@ -233,6 +223,7 @@ export default defineComponent({
     },
 });
 </script>
+
 
 <style scoped>
 .main-page {
