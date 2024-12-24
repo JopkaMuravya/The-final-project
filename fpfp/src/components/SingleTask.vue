@@ -1,186 +1,239 @@
 <template>
-    <div class="single-task-page">
-      <SidebarMenu />
-      <div class="content">
-        <div class="task-container">
-          <div class="scrollable-content">
-            <h2 class="task-title">{{ task.title }}</h2>
-            <p class="task-description">{{ task.description }}</p>
-            <div class="task-details">
-              <div class="task-info">
-                <span class="info-label">Категория: </span>
-                <span class="category-value" :style="{ color: getCategoryColor(task.category) }">
-                  {{ task.category }}
-                </span>
-              </div>
-              <div class="task-info">
-                <span class="info-label">Вознаграждение: </span>
-                {{ task.reward }}
-                <img class="coin-icon" :src="CoinIcon" alt="Монеты" />
-              </div>
-              <div class="task-info">
-                <span class="info-label">Автор: </span>
-                {{ task.user?.username || 'Анонимус' }}
-              </div>
+  <div class="single-task-page">
+    <SidebarMenu />
+    <div class="content">
+      <div class="task-container" v-if="task">
+        <div class="scrollable-content">
+          <h2 class="task-title">{{ task.title }}</h2>
+          <p class="task-description">{{ task.description }}</p>
+          <div class="task-details">
+            <div class="task-info">
+              <span class="info-label">Категория: </span>
+              <span class="category-value" :style="{ color: getCategoryColor(task.category) }">
+                {{ task.category }}
+              </span>
+            </div>
+            <div class="task-info">
+              <span class="info-label">Вознаграждение: </span>
+              {{ task.reward }}
+              <img class="coin-icon" :src="CoinIcon" alt="Монеты" />
+            </div>
+            <div class="task-info">
+              <span class="info-label">Автор: </span>
+              {{ task.user?.username || 'Анонимус' }}
             </div>
           </div>
-          <template v-if="task.user?.username === currentUser.username">
-            <div class="task-status">
-              <p><strong>Вы автор этого задания.</strong></p>
-              <p>
-                Статус:
-                <span v-if="task.executor">
-                  Задание взято исполнителем {{ task.executor.username }}
-                  <button class="complete-task-button" @click="markAsCompleted">Задание выполнено</button>
-                </span>
-                <span v-else>Задание пока никем не взято</span>
-              </p>
-            </div>
-          </template>
-          <template v-else>
-            <button v-if="task.executor" class="take-task-button" disabled>
-              {{ task.executor.username === currentUser.username ? 'Ваше задание' : 'Задание уже взято' }}
-            </button>
-            <button v-else class="take-task-button" @click="takeTask">
-              Взять задание
-            </button>
-          </template>
         </div>
-        <div class="chat-container">
-          <div class="scrollable-content">
-            <h3 class="chat-title">
-              {{ task.user?.username === currentUser.username ? "Чат с исполнителем" : "Чат с заказчиком" }}
-            </h3>
-            <div class="chat-messages">
-              <p class="chat-message"><strong>Заказчик:</strong> Добрый день, уточните, сможете ли выполнить до конца недели?</p>
-              <p class="chat-message"><strong>Вы:</strong> Да, я смогу выполнить задание в указанный срок.</p>
+        <template v-if="task.user?.username === currentUser ?.username">
+          <div class="task-status">
+            <p><strong>Вы автор этого задания.</strong></p>
+            <p>
+              Статус:
+              <span v-if="task.executor">
+                Задание взято исполнителем {{ task.executor.username }}
+                <button class="complete-task-button" @click="markAsCompleted">Задание выполнено</button>
+              </span>
+              <span v-else>Задание пока никем не взято</span>
+            </p>
+          </div>
+        </template>
+        <template v-else>
+          <button v-if="task.executor" class="take-task-button" disabled>
+            {{ task.executor.username === currentUser ?.username ? 'Ваше задание' : 'Задание уже взято' }}
+          </button>
+          <button v-else class="take-task-button" @click="takeTask">
+            Взять задание
+          </button>
+        </template>
+      </div>
+      <div class="chat-container" v-if="isChatAccessible">
+        <div class="scrollable-content">
+          <h3 class="chat-title">
+            {{ task.user?.username === currentUser ?.username ? "Чат с исполнителем" : "Чат с заказчиком" }}
+          </h3>
+          <div class="chat-messages">
+            <div v-for="(msg, index) in messages" :key="index" class="chat-message">
+              <strong>{{ msg.sender }}:</strong> {{ msg.message }}
             </div>
           </div>
-          <div class="chat-input-container">
-            <input
-              type="text"
-              class="chat-input"
-              placeholder="Напишите сообщение..."
-              :disabled="!task.executor || (!isChatAccessible && task.executor.username !== currentUser.username)"
-            />
-            <button
-              class="send-button"
-              :disabled="!task.executor || (!isChatAccessible && task.executor.username !== currentUser.username)"
-            >
-              Отправить
-            </button>
-          </div>
+        </div>
+        <div class="chat-input-container">
+          <input
+            type="text"
+            class="chat-input"
+            v-model="newMessage"
+            placeholder="Напишите сообщение..."
+            :disabled="!isChatAccessible"
+          />
+          <button
+            class="send-button"
+            :disabled="!isChatAccessible || !newMessage"
+            @click="sendMessage"
+          >
+            Отправить
+          </button>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import axios from 'axios';
-  import SidebarMenu from './SidebarMenu.vue';
-  import CoinIcon from '../assets/icons/coin.png';
-  
-  export default {
-    name: 'SingleTask',
-    components: {
-      SidebarMenu,
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+import SidebarMenu from './SidebarMenu.vue';
+import CoinIcon from '../assets/icons/coin.png';
+
+export default {
+  name: 'SingleTask',
+  components: {
+    SidebarMenu,
+  },
+  data() {
+    return {
+      task: null,
+      currentUser: null,
+      isChatAccessible: false,
+      messages: [],
+      newMessage: '',
+      socket: null,
+      categories: [
+        { name: 'Животные', color: '#FF5733' },
+        { name: 'Здоровье', color: '#33FF57' },
+        { name: 'Доставка', color: '#5733FF' },
+        { name: 'Образование', color: '#FFC300' },
+        { name: 'Ремонт', color: '#C70039' },
+        { name: 'Садоводство', color: '#900C3F' },
+        { name: 'Спорт', color: '#581845' },
+        { name: 'Технологии', color: '#33FFF6' },
+        { name: 'Транспорт', color: '#A569BD' },
+        { name: 'Другое', color: '#7DCEA0' },
+      ],
+      CoinIcon,
+    };
+  },
+  async created() {
+    const taskId = this.$route.params.id;
+    const token = localStorage.getItem('authToken');
+    try {
+      // Получение данных задания
+      const response = await axios.get(`http://localhost:8000/api/tasks/${taskId}/`, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+      this.task = response.data;
+
+      // Получение текущего пользователя
+      const userResponse = await axios.get('http://localhost:8000/api/users/me/', {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+      this.currentUser  = userResponse.data;
+
+      // Проверка доступа к чату
+      if (this.task.executor || this.task.user.username === this.currentUser .username) {
+        this.isChatAccessible = true;
+      }
+
+      // Подключение к WebSocket
+      this.connectToWebSocket(taskId);
+    } catch (error) {
+      console.error('Ошибка загрузки данных:', error);
+    }
+  },
+  methods: {
+    getCategoryColor(categoryName) {
+      const category = this.categories.find((cat) => cat.name === categoryName);
+      return category ? category.color : '#ffffff';
     },
-    data() {
-      return {
-        task: null,
-        currentUser: null,
-        isChatAccessible: false,
-        categories: [
-          { name: 'Животные', color: '#FF5733' },
-          { name: 'Здоровье', color: '#33FF57' },
-          { name: 'Доставка', color: '#5733FF' },
-          { name: 'Образование', color: '#FFC300' },
-          { name: 'Ремонт', color: '#C70039' },
-          { name: 'Садоводство', color: '#900C3F' },
-          { name: 'Спорт', color: '#581845' },
-          { name: 'Технологии', color: '#33FFF6' },
-          { name: 'Транспорт', color: '#A569BD' },
-          { name: 'Другое', color: '#7DCEA0' },
-        ],
-        CoinIcon,
-      };
-    },
-    async created() {
+    async takeTask() {
       const taskId = this.$route.params.id;
       const token = localStorage.getItem('authToken');
       try {
-        const response = await axios.get(`http://localhost:8000/api/tasks/${taskId}/`, {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        });
+        const response = await axios.post(
+          `http://localhost:8000/api/tasks/${taskId}/take/`,
+          {},
+          {
+            headers: {
+              Authorization: `Token ${token}`,
+            },
+          }
+        );
         this.task = response.data;
-  
-        const userResponse = await axios.get('http://localhost:8000/api/users/me/', {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        });
-        this.currentUser = userResponse.data;
-  
-        if (this.task.executor || this.task.user.username === this.currentUser.username) {
-          this.isChatAccessible = true;
-        }
+        alert('Задание успешно взято!');
+        this.isChatAccessible = true;
       } catch (error) {
-        console.error('Ошибка загрузки данных:', error);
+        const errorMessage = error.response?.data?.error || 'Ошибка при взятии задания';
+        alert(errorMessage);
+        console.error('Ошибка:', errorMessage);
       }
     },
-    methods: {
-      getCategoryColor(categoryName) {
-        const category = this.categories.find((cat) => cat.name === categoryName);
-        return category ? category.color : '#ffffff';
-      },
-      async takeTask() {
-        const taskId = this.$route.params.id;
-        const token = localStorage.getItem('authToken');
-        try {
-          const response = await axios.post(
-            `http://localhost:8000/api/tasks/${taskId}/take/`,
-            {},
-            {
-              headers: {
-                Authorization: `Token ${token}`,
-              },
-            }
-          );
-          this.task = response.data;
-          alert('Задание успешно взято!');
-          this.isChatAccessible = true;
-        } catch (error) {
-          const errorMessage = error.response?.data?.error || 'Ошибка при взятии задания';
-          alert(errorMessage);
-          console.error('Ошибка:', errorMessage);
-        }
-      },
-      async markAsCompleted() {
-        const taskId = this.$route.params.id;
-        const token = localStorage.getItem('authToken');
-        try {
-          await axios.post(
-            `http://localhost:8000/api/tasks/${taskId}/complete/`,
-            {},
-            {
-              headers: {
-                Authorization: `Token ${token}`,
-              },
-            }
-          );
-          alert('Задание успешно помечено как выполненное!');
-          this.task.executor = null;
-        } catch (error) {
-          console.error('Ошибка при завершении задания:', error);
-        }
-      },
+    async markAsCompleted() {
+      const taskId = this.$route.params.id;
+      const token = localStorage.getItem('authToken');
+      try {
+        await axios.post(
+          `http://localhost:8000/api/tasks/${taskId}/complete/`,
+          {},
+          {
+            headers: {
+              Authorization: `Token ${token}`,
+            },
+          }
+        );
+        alert('Задание успешно помечено как выполненное!');
+        this.task.executor = null;
+      } catch (error) {
+        console.error('Ошибка при завершении задания:', error);
+      }
     },
-  };
-  </script>
+    connectToWebSocket(taskId) {
+    this.socket = new WebSocket(`ws://localhost:8000/ws/chat/${taskId}/`);
+
+    this.socket.onopen = () => {
+      console.log('WebSocket подключен');
+    };
+
+    this.socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.sender && data.message) {
+        this.messages.push(data);
+      } else {
+        console.error('Получено пустое сообщение:', data);
+      }
+    };
+
+    this.socket.onclose = () => {
+      console.log('WebSocket закрыт');
+      // Попробуйте переподключиться через некоторое время
+      setTimeout(() => {
+        this.connectToWebSocket(taskId);
+      }, 5000); // 5 секунд
+    };
+
+    this.socket.onerror = (error) => {
+      console.error('WebSocket ошибка:', error);
+    };
+  },
+    sendMessage() {
+      if (this.newMessage.trim() !== '') {
+        const messageData = {
+          sender: this.currentUser .username,
+          message: this.newMessage,
+        };
+        console.log(this.newMessage)
+        console.log(this.currentUser.username)
+        this.socket.send(JSON.stringify(messageData));
+        this.newMessage = '';
+      }
+    },
+  },
+};
+</script>
+ 
   
-  <style scoped>
+<style scoped>
   .complete-task-button {
     margin-left: 10px;
     padding: 8px 12px;

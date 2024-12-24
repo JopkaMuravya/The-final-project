@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Task
+from .models import CustomUser, Task, Message
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -25,3 +25,9 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = ['id', 'user', 'executor', 'title', 'description', 'category', 'reward', 'tags', 'created_at']
         read_only_fields = ['id', 'created_at', 'user', 'executor']
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = '__all__'

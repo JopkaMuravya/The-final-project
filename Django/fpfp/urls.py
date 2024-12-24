@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from users.views import UserViewSet, LoginView, CurrentUserView, TaskViewSet, UpdateBalanceView, ConfirmEmailView
+from users.views import UserViewSet, LoginView, CurrentUserView, TaskViewSet, UpdateBalanceView, ConfirmEmailView, MessageViewSet
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -8,6 +8,7 @@ from django.contrib import admin
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='user')
 router.register(r'tasks', TaskViewSet, basename='task')
+router.register(r'messages', MessageViewSet, basename='message')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

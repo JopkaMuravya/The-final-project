@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from .serializers import UserSerializer, TaskSerializer
-from .models import Task, CustomUser
+from .serializers import UserSerializer, TaskSerializer, MessageSerializer
+from .models import Task, CustomUser, Message
 from decimal import Decimal
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -136,3 +136,11 @@ class TaskViewSet(viewsets.ModelViewSet):
         task.save()
 
         return Response(TaskSerializer(task).data, status=status.HTTP_200_OK)
+
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(sender=self.request.user)
