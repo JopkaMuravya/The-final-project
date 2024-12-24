@@ -122,7 +122,7 @@
 import { defineComponent } from 'vue';
 import axios from 'axios';
 import SidebarMenu from './SidebarMenu.vue';
-import 'emoji-picker-element'; 
+import 'emoji-picker-element';
 import CoinIcon from '../assets/icons/coin.png';
 import BoldIcon from '../assets/icons/bold.png';
 import ItalicIcon from '../assets/icons/italic.png';
@@ -148,7 +148,7 @@ export default defineComponent({
             currentBalance: 0,
             tags: '',
             file: null as File | null,
-            showEmojiPicker: false, 
+            showEmojiPicker: false,
             categories: [
                 { name: 'Животные', color: '#FF5733' },
                 { name: 'Здоровье', color: '#33FF57' },
@@ -215,6 +215,17 @@ export default defineComponent({
                     },
                 });
 
+                await axios.post(
+                    'http://localhost:8000/api/users/me/update-balance/',
+                    { amount: -this.reward },
+                    {
+                        headers: {
+                            Authorization: `Token ${token}`,
+                        },
+                    }
+                );
+
+                this.currentBalance -= this.reward; 
                 alert('Задание успешно создано!');
                 this.$router.push('/main');
             } catch (error) {
@@ -229,9 +240,9 @@ export default defineComponent({
             this.showEmojiPicker = !this.showEmojiPicker;
         },
         addEmoji(event: CustomEvent<{ unicode: string }>) {
-            const emoji = event.detail.unicode; 
-            this.description += emoji; 
-            this.showEmojiPicker = false; 
+            const emoji = event.detail.unicode;
+            this.description += emoji;
+            this.showEmojiPicker = false;
         },
         addBold() {
             this.description += '**жирный текст**';
