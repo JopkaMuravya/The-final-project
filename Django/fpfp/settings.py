@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from config import Super_Sekretnaya_Shtuka
+from .config import Super_Sekretnaya_Shtuka
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
