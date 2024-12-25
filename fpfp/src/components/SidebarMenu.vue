@@ -93,7 +93,7 @@
   <style scoped>
   .sidebar {
     width: 250px;
-    background: #0d1b2a;
+    background: #5c341e;
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -104,7 +104,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: #ffffff;
+    background: #fbceb1;
     border-radius: 8px;
     padding: 15px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -123,12 +123,12 @@
     text-align: center;
     margin-bottom: 15px;
   }
-  .username {
-    color: #0d1b2a;
-    font-weight: bold;
-    font-size: 18px;
-    margin: 5px 0;
-  }
+    .username {
+      color: #5c341e;
+      font-weight: bold;
+      font-size: 18px;
+      margin: 5px 0;
+    }
   .level,
   .rank {
     color: #7a7a7a;
@@ -154,22 +154,22 @@
     margin: 20px 0 0;
     width: 100%;
   }
-  .menu li {
-    margin: 10px 0;
-    padding: 10px;
-    background: #ffffff;
-    color: #0d1b2a;
-    border-radius: 5px;
-    text-align: center;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
+    .menu li {
+      margin: 10px 0;
+      padding: 10px;
+      background: #fbceb1;
+      color: #5c341e;
+      border-radius: 5px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
   .menu li.logout {
     margin-top: 20px;
-    background: #d9534f;
-    color: white;
+    background: #e66c28;
+    color: papayawhip;
   }
   .menu li.logout:hover {
     background: #c9302c;

@@ -145,7 +145,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    background: #ffffff;
+    background: papayawhip;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 5px 20px;
@@ -161,7 +161,7 @@
     margin: 0 0 -10px;
     font-size: 18px;
     font-weight: bold;
-    color: #1b263b;
+    color: #5c341e;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -195,16 +195,20 @@
   
   .task-meta {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: left;
     gap: 10px;
+    min-width: 50%;
   }
-  
+
   .user-section {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 4px;
+    flex-direction: column;
+    min-width: 40%;
+    margin-top: 10px;
   }
   
   .user-avatar {
@@ -220,13 +224,14 @@
     font-weight: bold;
     color: #333;
   }
-  
+
   .task-category {
     font-size: 14px;
     color: #555;
     margin: 0;
     display: flex;
     align-items: center;
+    min-width: 30%;
   }
   
   .category-dot {
@@ -235,11 +240,12 @@
     border-radius: 50%;
     margin-right: 5px;
   }
-  
+
   .task-reward {
     display: flex;
     align-items: center;
     gap: 5px;
+    min-width: 20%;
   }
   
   .reward-icon {
