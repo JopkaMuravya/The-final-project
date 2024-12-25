@@ -20,6 +20,7 @@ from django.utils.encoding import force_str
 from .tokens import account_activation_token
 from django.shortcuts import render, redirect
 from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -106,21 +107,10 @@ class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser) 
 
     def perform_create(self, serializer):
-        task = serializer.save(user=self.request.user)
-        self.notify_task_created(task)
-
-    def notify_task_created(self, task):
-        channel_layer = get_channel_layer()
-        task_data = TaskSerializer(task).data
-        async_to_sync(channel_layer.group_send)(
-            "tasks",
-            {
-                "type": "task_message",
-                "message": task_data,
-            },
-        )
+        serializer.save(user=self.request.user)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def take(self, request, pk=None):

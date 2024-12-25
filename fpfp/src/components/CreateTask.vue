@@ -19,16 +19,16 @@
                 <div class="form-group">
                     <label for="description" class="form-label">Описание</label>
                     <div class="icon-buttons">
-                        <button type="button" class="icon-button">
+                        <button type="button" class="icon-button" @click="addBold">
                             <img :src="BoldIcon" alt="Bold" />
                         </button>
-                        <button type="button" class="icon-button">
+                        <button type="button" class="icon-button" @click="addItalic">
                             <img :src="ItalicIcon" alt="Italic" />
                         </button>
-                        <button type="button" class="icon-button">
+                        <button type="button" class="icon-button" @click="addUnderline">
                             <img :src="UnderlineIcon" alt="Underline" />
                         </button>
-                        <button type="button" class="icon-button">
+                        <button type="button" class="icon-button" @click="toggleEmojiPicker">
                             <img :src="SmileyIcon" alt="Emoji" />
                         </button>
                     </div>
@@ -39,6 +39,9 @@
                         placeholder="Опишите задание"
                         required
                     ></textarea>
+                    <div v-if="showEmojiPicker" class="emoji-picker">
+                        <emoji-picker class="light" @emoji-click="addEmoji"></emoji-picker>
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -93,12 +96,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="files" class="form-label">Прикрепить файлы</label>
+                    <label for="files" class="form-label">Прикрепить файл</label>
                     <input
                         type="file"
                         id="files"
                         class="form-control"
-                        multiple
                         @change="handleFileUpload"
                     />
                 </div>
@@ -120,6 +122,7 @@
 import { defineComponent } from 'vue';
 import axios from 'axios';
 import SidebarMenu from './SidebarMenu.vue';
+import 'emoji-picker-element';
 import CoinIcon from '../assets/icons/coin.png';
 import BoldIcon from '../assets/icons/bold.png';
 import ItalicIcon from '../assets/icons/italic.png';
@@ -144,7 +147,8 @@ export default defineComponent({
             reward: 0,
             currentBalance: 0,
             tags: '',
-            files: [] as File[],
+            file: null as File | null,
+            showEmojiPicker: false,
             categories: [
                 { name: 'Животные', color: '#FF5733' },
                 { name: 'Здоровье', color: '#33FF57' },
@@ -182,9 +186,7 @@ export default defineComponent({
         },
         handleFileUpload(event: Event) {
             const target = event.target as HTMLInputElement;
-            if (target.files) {
-                this.files = Array.from(target.files);
-            }
+            this.file = target.files?.[0] || null;
         },
         async createTask() {
             try {
@@ -196,17 +198,20 @@ export default defineComponent({
                     return;
                 }
 
-                const formData = {
-                    title: this.title,
-                    description: this.description,
-                    category: this.category,
-                    reward: this.reward,
-                    tags: this.tags, 
-                };
+                const formData = new FormData();
+                formData.append('title', this.title);
+                formData.append('description', this.description);
+                formData.append('category', this.category);
+                formData.append('reward', this.reward.toString());
+                formData.append('tags', this.tags);
+                if (this.file) {
+                    formData.append('image', this.file);
+                }
 
                 await axios.post('http://localhost:8000/api/tasks/', formData, {
                     headers: {
                         Authorization: `Token ${token}`,
+                        'Content-Type': 'multipart/form-data',
                     },
                 });
 
@@ -220,6 +225,7 @@ export default defineComponent({
                     }
                 );
 
+                this.currentBalance -= this.reward; 
                 alert('Задание успешно создано!');
                 this.$router.push('/main');
             } catch (error) {
@@ -229,6 +235,23 @@ export default defineComponent({
         },
         goBack() {
             window.history.back();
+        },
+        toggleEmojiPicker() {
+            this.showEmojiPicker = !this.showEmojiPicker;
+        },
+        addEmoji(event: CustomEvent<{ unicode: string }>) {
+            const emoji = event.detail.unicode;
+            this.description += emoji;
+            this.showEmojiPicker = false;
+        },
+        addBold() {
+            this.description += '**жирный текст**';
+        },
+        addItalic() {
+            this.description += '_курсивный текст_';
+        },
+        addUnderline() {
+            this.description += '<u>подчёркнутый текст</u>';
         },
     },
 });
@@ -267,6 +290,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     gap: 3px;
+    position: relative;
 }
 
 .form-label {
@@ -311,6 +335,17 @@ export default defineComponent({
 
 textarea.form-control {
     resize: vertical;
+}
+
+.emoji-picker {
+    position: absolute;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    margin-top: 10px;
 }
 
 .form-row {
